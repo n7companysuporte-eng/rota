@@ -1,0 +1,901 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>N7 Rota Control</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Inter',sans-serif;
+}
+
+body{
+    background:#f3f6f4;
+    color:#111;
+    padding-bottom:100px;
+}
+
+.header{
+    background:linear-gradient(135deg,#00c853,#00e676);
+    padding:25px 20px 35px;
+    border-radius:0 0 35px 35px;
+    color:white;
+    box-shadow:0 10px 30px rgba(0,0,0,.15);
+}
+
+.logo{
+    display:flex;
+    align-items:center;
+    gap:14px;
+}
+
+.logo-icon{
+    width:58px;
+    height:58px;
+    border-radius:18px;
+    background:white;
+    color:#00c853;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-weight:800;
+    font-size:22px;
+}
+
+.logo h1{
+    font-size:24px;
+}
+
+.logo p{
+    font-size:12px;
+    opacity:.9;
+}
+
+.balance{
+    background:white;
+    border-radius:28px;
+    padding:22px;
+    margin-top:25px;
+    color:#111;
+}
+
+.balance small{
+    color:#666;
+}
+
+.balance h2{
+    font-size:36px;
+    margin-top:10px;
+    color:#00c853;
+}
+
+.stats{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:12px;
+    margin-top:20px;
+}
+
+.stat{
+    background:#f4f7f5;
+    padding:16px;
+    border-radius:18px;
+}
+
+.stat span{
+    font-size:12px;
+    color:#666;
+}
+
+.stat h3{
+    margin-top:6px;
+    color:#00c853;
+    font-size:22px;
+}
+
+.container{
+    padding:20px;
+}
+
+.page{
+    display:none;
+}
+
+.page.active{
+    display:block;
+}
+
+.card{
+    background:white;
+    border-radius:28px;
+    padding:22px;
+    margin-bottom:20px;
+    box-shadow:0 5px 20px rgba(0,0,0,.05);
+}
+
+.card-title{
+    font-size:22px;
+    margin-bottom:20px;
+    font-weight:700;
+}
+
+.input-group{
+    margin-bottom:15px;
+}
+
+.input-group label{
+    display:block;
+    margin-bottom:8px;
+    font-size:14px;
+    font-weight:600;
+    color:#555;
+}
+
+.input-group input,
+.input-group select,
+.input-group textarea{
+    width:100%;
+    border:none;
+    background:#f1f5f3;
+    padding:16px;
+    border-radius:18px;
+    outline:none;
+    font-size:15px;
+}
+
+.btn{
+    width:100%;
+    border:none;
+    background:linear-gradient(135deg,#00c853,#00e676);
+    color:white;
+    padding:17px;
+    border-radius:18px;
+    font-weight:700;
+    cursor:pointer;
+    font-size:15px;
+}
+
+.btn:active{
+    transform:scale(.98);
+}
+
+.list{
+    margin-top:20px;
+}
+
+.item{
+    background:#f5f7f5;
+    padding:18px;
+    border-radius:18px;
+    margin-bottom:12px;
+}
+
+.item strong{
+    color:#00c853;
+    display:block;
+    margin-bottom:6px;
+}
+
+.bottom-nav{
+    position:fixed;
+    bottom:0;
+    left:0;
+    width:100%;
+    background:white;
+    display:flex;
+    justify-content:space-around;
+    padding:15px 10px;
+    box-shadow:0 -5px 20px rgba(0,0,0,.08);
+    z-index:999;
+}
+
+.bottom-nav button{
+    border:none;
+    background:none;
+    color:#00c853;
+    font-weight:700;
+    font-size:12px;
+}
+
+.badge{
+    display:inline-block;
+    padding:6px 12px;
+    border-radius:999px;
+    font-size:12px;
+    font-weight:700;
+    margin-top:8px;
+}
+
+.success{
+    background:#e8f5e9;
+    color:#00c853;
+}
+
+.warning{
+    background:#fff8e1;
+    color:#ff9800;
+}
+
+.danger{
+    background:#ffebee;
+    color:#e53935;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+}
+
+table th,
+table td{
+    padding:12px;
+    font-size:13px;
+    text-align:left;
+    border-bottom:1px solid #eee;
+}
+
+.ai-box{
+    background:linear-gradient(135deg,#00c85315,#00e67615);
+    border:2px solid #00c85320;
+    border-radius:22px;
+    padding:18px;
+}
+
+.ai-box h3{
+    color:#00c853;
+    margin-bottom:10px;
+}
+
+</style>
+
+</head>
+<body>
+
+<div class="header">
+
+    <div class="logo">
+
+        <div class="logo-icon">
+            N7
+        </div>
+
+        <div>
+            <h1>N7 Rota Control</h1>
+            <p>"O Senhor é o meu pastor e nada me faltará."</p>
+        </div>
+
+    </div>
+
+    <div class="balance">
+
+        <small>Total em vendas</small>
+
+        <h2 id="totalVendas">
+            R$ 0,00
+        </h2>
+
+        <div class="stats">
+
+            <div class="stat">
+                <span>Clientes</span>
+                <h3 id="clientesTotal">0</h3>
+            </div>
+
+            <div class="stat">
+                <span>Promissórias</span>
+                <h3 id="promissoriasTotal">0</h3>
+            </div>
+
+            <div class="stat">
+                <span>Rotas</span>
+                <h3 id="rotasTotal">0</h3>
+            </div>
+
+            <div class="stat">
+                <span>Recebimentos</span>
+                <h3 id="recebimentosTotal">0</h3>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<div class="container">
+
+<div class="page active" id="dashboard">
+
+    <div class="card">
+
+        <div class="card-title">
+            Inteligência Estratégica
+        </div>
+
+        <div class="ai-box">
+
+            <h3>Sugestão IA</h3>
+
+            <p id="iaMensagem">
+                Clientes de Inhumas costumam comprar mais cosméticos no começo do mês.
+            </p>
+
+            <div class="badge warning">
+                Estratégico
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<div class="page" id="clientes">
+
+    <div class="card">
+
+        <div class="card-title">
+            Cadastrar Cliente
+        </div>
+
+        <div class="input-group">
+            <label>Nome</label>
+            <input type="text" id="clienteNome">
+        </div>
+
+        <div class="input-group">
+            <label>Telefone</label>
+            <input type="text" id="clienteTelefone">
+        </div>
+
+        <div class="input-group">
+            <label>Cidade</label>
+
+            <select id="clienteCidade"></select>
+
+        </div>
+
+        <div class="input-group">
+            <label>Observações</label>
+            <textarea id="clienteObs"></textarea>
+        </div>
+
+        <button class="btn" onclick="addCliente()">
+            Salvar Cliente
+        </button>
+
+        <div class="list" id="clientesList"></div>
+
+    </div>
+
+</div>
+
+<div class="page" id="vendas">
+
+    <div class="card">
+
+        <div class="card-title">
+            Registrar Venda
+        </div>
+
+        <div class="input-group">
+            <label>Cliente</label>
+            <input type="text" id="vendaCliente">
+        </div>
+
+        <div class="input-group">
+            <label>Produto</label>
+            <input type="text" id="vendaProduto">
+        </div>
+
+        <div class="input-group">
+            <label>Valor</label>
+            <input type="number" id="vendaValor">
+        </div>
+
+        <div class="input-group">
+            <label>Forma de pagamento</label>
+
+            <select id="vendaForma">
+                <option>Pix</option>
+                <option>Dinheiro</option>
+                <option>Cartão</option>
+                <option>Promissória</option>
+            </select>
+
+        </div>
+
+        <button class="btn" onclick="registrarVenda()">
+            Registrar Venda
+        </button>
+
+        <div class="list" id="vendasList"></div>
+
+    </div>
+
+</div>
+
+<div class="page" id="rotas">
+
+    <div class="card">
+
+        <div class="card-title">
+            Criar Rotas
+        </div>
+
+        <div class="input-group">
+            <label>Vendedor</label>
+            <input type="text" id="rotaVendedor">
+        </div>
+
+        <div class="input-group">
+            <label>Cidade</label>
+
+            <select id="rotaCidade"></select>
+
+        </div>
+
+        <div class="input-group">
+            <label>Data</label>
+            <input type="date" id="rotaData">
+        </div>
+
+        <button class="btn" onclick="addRota()">
+            Salvar Rota
+        </button>
+
+        <div class="list" id="rotasList"></div>
+
+    </div>
+
+</div>
+
+<div class="page" id="financeiro">
+
+    <div class="card">
+
+        <div class="card-title">
+            Promissórias
+        </div>
+
+        <table>
+
+            <thead>
+
+                <tr>
+                    <th>Cliente</th>
+                    <th>Valor</th>
+                    <th>Status</th>
+                </tr>
+
+            </thead>
+
+            <tbody id="promissoriasList"></tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+</div>
+
+<div class="bottom-nav">
+
+    <button onclick="openPage('dashboard')">
+        Dashboard
+    </button>
+
+    <button onclick="openPage('clientes')">
+        Clientes
+    </button>
+
+    <button onclick="openPage('vendas')">
+        Vendas
+    </button>
+
+    <button onclick="openPage('rotas')">
+        Rotas
+    </button>
+
+    <button onclick="openPage('financeiro')">
+        Financeiro
+    </button>
+
+</div>
+
+<script>
+
+const cidadesGoias = [
+
+'Abadia de Goiás','Abadiânia','Acreúna','Adelândia',
+'Águas Lindas de Goiás','Alexânia','Anápolis',
+'Aparecida de Goiânia','Caldas Novas','Catalão',
+'Cidade Ocidental','Formosa','Goianésia',
+'Goiânia','Goianira','Goiás','Goiatuba',
+'Guapó','Hidrolândia','Inhumas','Iporá',
+'Itaberaí','Itumbiara','Jataí','Luziânia',
+'Mineiros','Morrinhos','Nerópolis',
+'Niquelândia','Novo Gama','Piracanjuba',
+'Pirenópolis','Pires do Rio','Planaltina',
+'Porangatu','Posse','Quirinópolis',
+'Rio Verde','Rubiataba','Santa Helena de Goiás',
+'Senador Canedo','São Luís de Montes Belos',
+'Trindade','Uruaçu','Valparaíso de Goiás',
+'Vianópolis'
+
+];
+
+let clientes =
+JSON.parse(localStorage.getItem('clientes')) || [];
+
+let vendas =
+JSON.parse(localStorage.getItem('vendas')) || [];
+
+let rotas =
+JSON.parse(localStorage.getItem('rotas')) || [];
+
+function salvarDados(){
+
+    localStorage.setItem(
+        'clientes',
+        JSON.stringify(clientes)
+    );
+
+    localStorage.setItem(
+        'vendas',
+        JSON.stringify(vendas)
+    );
+
+    localStorage.setItem(
+        'rotas',
+        JSON.stringify(rotas)
+    );
+
+}
+
+function carregarCidades(){
+
+    const selects = [
+        document.getElementById('clienteCidade'),
+        document.getElementById('rotaCidade')
+    ];
+
+    selects.forEach(select => {
+
+        select.innerHTML =
+        '<option value="">Selecione a cidade</option>';
+
+        cidadesGoias.forEach(cidade => {
+
+            const option =
+            document.createElement('option');
+
+            option.value = cidade;
+            option.textContent = cidade;
+
+            select.appendChild(option);
+
+        });
+
+    });
+
+}
+
+function openPage(page){
+
+    document.querySelectorAll('.page')
+    .forEach(p => {
+
+        p.classList.remove('active');
+
+    });
+
+    document.getElementById(page)
+    .classList.add('active');
+
+}
+
+function atualizarDashboard(){
+
+    let total = 0;
+
+    vendas.forEach(v => {
+
+        total += Number(v.valor);
+
+    });
+
+    document.getElementById('totalVendas')
+    .innerText =
+    'R$ ' + total.toFixed(2);
+
+    document.getElementById('clientesTotal')
+    .innerText =
+    clientes.length;
+
+    document.getElementById('rotasTotal')
+    .innerText =
+    rotas.length;
+
+    let promissorias =
+    vendas.filter(v => v.forma === 'Promissória');
+
+    document.getElementById('promissoriasTotal')
+    .innerText =
+    promissorias.length;
+
+    document.getElementById('recebimentosTotal')
+    .innerText =
+    vendas.length;
+
+}
+
+function renderClientes(){
+
+    let html = '';
+
+    clientes.forEach((cliente,index) => {
+
+        html += `
+
+        <div class="item">
+
+            <strong>${cliente.nome}</strong>
+
+            ${cliente.telefone}<br>
+            ${cliente.cidade}<br>
+
+            <div class="badge success">
+                Cliente ativo
+            </div>
+
+        </div>
+
+        `;
+
+    });
+
+    document.getElementById('clientesList')
+    .innerHTML = html;
+
+}
+
+function renderVendas(){
+
+    let html = '';
+
+    vendas.forEach(venda => {
+
+        html += `
+
+        <div class="item">
+
+            <strong>${venda.cliente}</strong>
+
+            ${venda.produto}<br>
+
+            R$ ${venda.valor}<br>
+
+            <div class="badge success">
+                ${venda.forma}
+            </div>
+
+        </div>
+
+        `;
+
+    });
+
+    document.getElementById('vendasList')
+    .innerHTML = html;
+
+    let promissoriaHTML = '';
+
+    vendas
+    .filter(v => v.forma === 'Promissória')
+    .forEach(v => {
+
+        promissoriaHTML += `
+
+        <tr>
+
+            <td>${v.cliente}</td>
+
+            <td>
+                R$ ${v.valor}
+            </td>
+
+            <td>
+                <div class="badge warning">
+                    Em aberto
+                </div>
+            </td>
+
+        </tr>
+
+        `;
+
+    });
+
+    document.getElementById('promissoriasList')
+    .innerHTML = promissoriaHTML;
+
+}
+
+function renderRotas(){
+
+    let html = '';
+
+    rotas.forEach(rota => {
+
+        html += `
+
+        <div class="item">
+
+            <strong>${rota.vendedor}</strong>
+
+            ${rota.cidade}<br>
+            ${rota.data}
+
+            <div class="badge success">
+                Rota criada
+            </div>
+
+        </div>
+
+        `;
+
+    });
+
+    document.getElementById('rotasList')
+    .innerHTML = html;
+
+}
+
+function addCliente(){
+
+    let nome =
+    document.getElementById('clienteNome').value;
+
+    let telefone =
+    document.getElementById('clienteTelefone').value;
+
+    let cidade =
+    document.getElementById('clienteCidade').value;
+
+    let obs =
+    document.getElementById('clienteObs').value;
+
+    if(nome === ''){
+
+        alert('Digite o nome');
+        return;
+
+    }
+
+    clientes.push({
+        nome,
+        telefone,
+        cidade,
+        obs
+    });
+
+    salvarDados();
+
+    renderClientes();
+
+    atualizarDashboard();
+
+    document.getElementById('clienteNome').value = '';
+    document.getElementById('clienteTelefone').value = '';
+    document.getElementById('clienteCidade').value = '';
+    document.getElementById('clienteObs').value = '';
+
+    alert('Cliente salvo com sucesso!');
+
+}
+
+function registrarVenda(){
+
+    let cliente =
+    document.getElementById('vendaCliente').value;
+
+    let produto =
+    document.getElementById('vendaProduto').value;
+
+    let valor =
+    document.getElementById('vendaValor').value;
+
+    let forma =
+    document.getElementById('vendaForma').value;
+
+    if(cliente === '' || valor === ''){
+
+        alert('Preencha os campos');
+        return;
+
+    }
+
+    vendas.push({
+        cliente,
+        produto,
+        valor,
+        forma
+    });
+
+    salvarDados();
+
+    renderVendas();
+
+    atualizarDashboard();
+
+    document.getElementById('vendaCliente').value = '';
+    document.getElementById('vendaProduto').value = '';
+    document.getElementById('vendaValor').value = '';
+
+    alert('Venda registrada!');
+
+}
+
+function addRota(){
+
+    let vendedor =
+    document.getElementById('rotaVendedor').value;
+
+    let cidade =
+    document.getElementById('rotaCidade').value;
+
+    let data =
+    document.getElementById('rotaData').value;
+
+    if(vendedor === ''){
+
+        alert('Digite o vendedor');
+        return;
+
+    }
+
+    rotas.push({
+        vendedor,
+        cidade,
+        data
+    });
+
+    salvarDados();
+
+    renderRotas();
+
+    atualizarDashboard();
+
+    document.getElementById('rotaVendedor').value = '';
+    document.getElementById('rotaCidade').value = '';
+    document.getElementById('rotaData').value = '';
+
+    alert('Rota salva!');
+
+}
+
+carregarCidades();
+
+renderClientes();
+
+renderVendas();
+
+renderRotas();
+
+atualizarDashboard();
+
+</script>
+
+</body>
+</html>
